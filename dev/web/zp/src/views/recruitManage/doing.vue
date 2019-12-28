@@ -3,12 +3,12 @@
  * 招聘中页面
  * @Date: 2019-12-23 17:03:30 
  * @Last Modified by: tangjs
- * @Last Modified time: 2019-12-28 10:04:48
+ * @Last Modified time: 2019-12-28 16:56:50
  */
 <template>
   <div id="recruitDoing">
     <div class="icon">
-      <el-button type="primary" icon="el-icon-edit" class="put">发布职位</el-button>
+      <el-button type="primary" icon="el-icon-edit" class="put" @click="toAdd()" :visible.sync="addVisible" width="60%" :before-close="beforeClose">发布职位</el-button>
       <el-button type="primary" icon="el-icon-edit" class="import">导入职位</el-button>
     </div>
     <div class="searchDiv">
@@ -80,35 +80,35 @@
     <el-dialog
       :visible.sync="seeVisible">
       <div class="seeDiv1">
-        <h2>{{currentBus.title}}</h2>
+        <h2>{{currentEm.title}}</h2>
       </div>
       <div class="seeDiv2">
-        {{currentBus.salary}}元/月
+        {{currentEm.salary}}元/月
       </div>
       <div class="seeDiv3">
-        招{{currentBus.num}}人
+        招{{currentEm.num}}人
       </div>
       <div class="seeDiv5">
-        福利：{{currentBus.welfare}}
+        福利：{{currentEm.welfare}}
       </div>
       <hr>
       <div class="seeDiv4">
         <h3>职位描述</h3>
-        {{currentBus.description}}
+        {{currentEm.description}}
       </div>
     </el-dialog>
      <!-- 修改模态框 -->
     <el-dialog title="修改招聘" :visible.sync="editVisible" width="60%" :before-close="beforeClose">
-      <el-form :model="currentBus" :rules="rules" ref="ruleForm">
+      <el-form :model="currentEm" :rules="rules" ref="ruleForm">
         <el-form-item prop="title" label="兼职名称" :label-width="formLabelWidth">
-          <el-input v-model="currentBus.title"></el-input>
+          <el-input v-model="currentEm.title"></el-input>
         </el-form-item>
         <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item prop="job" clearable required label="选择工种" :label-width="formLabelWidth">
               <el-select 
                 clearable 
-                v-model="currentBus.job" 
+                v-model="currentEm.job" 
                 placeholder="请选择工种信息">
                 <el-option
                   v-for="item in jobtypeData"
@@ -121,34 +121,44 @@
           </el-col>
           <el-col :span="12">
             <el-form-item prop="num" label="招聘人数" :label-width="formLabelWidth">
-              <el-input v-model="currentBus.num"></el-input>
+              <el-input v-model="currentEm.num"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-form-item prop="businessId" label="招聘公司" :label-width="formLabelWidth">
-              <el-input v-model="currentBus.businessId"></el-input>
+            <el-form-item prop="businessId" clearable required label="招聘公司" :label-width="formLabelWidth">
+              <el-select 
+                clearable 
+                v-model="currentEm.businessId" 
+                placeholder="请选择工种信息">
+                <el-option
+                  v-for="item in businessData"
+                  :key="item"
+                  :label="item"
+                  :value="item">
+                </el-option>
+              </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item prop="salary" label="薪资水平" :label-width="formLabelWidth">
-              <el-input v-model="currentBus.salary"></el-input>
+              <el-input v-model="currentEm.salary"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-form-item prop="welfare" label="职位标签" :label-width="formLabelWidth">
-          <el-input v-model="currentBus.welfare"></el-input>
+          <el-input v-model="currentEm.welfare"></el-input>
         </el-form-item>
         <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item prop="contactPhone" label="联系方式" :label-width="formLabelWidth">
-              <el-input v-model="currentBus.contactPhone"></el-input>
+              <el-input v-model="currentEm.contactPhone"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item prop="contactName" label="联系人姓名" :label-width="formLabelWidth">
-              <el-input v-model="currentBus.contactName"></el-input>
+              <el-input v-model="currentEm.contactName"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
@@ -157,13 +167,13 @@
             <el-form-item prop="auditStatus" clearable required label="审核状态" :label-width="formLabelWidth">
               <el-select 
                 clearable 
-                v-model="currentBus.auditStatus" 
+                v-model="currentEm.auditStatus" 
                 placeholder="请选择审核状态">
                 <el-option
                   v-for="item in auditStatusData"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.name">
+                  :key="item"
+                  :label="item"
+                  :value="item">
                 </el-option>
               </el-select>
             </el-form-item>
@@ -172,13 +182,13 @@
             <el-form-item prop="status" clearable required label="状态" :label-width="formLabelWidth">
               <el-select 
                 clearable 
-                v-model="currentBus.status" 
+                v-model="currentEm.status" 
                 placeholder="请选择状态">
                 <el-option
                   v-for="item in statusData"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.name">
+                  :key="item"
+                  :label="item"
+                  :value="item">
                 </el-option>
               </el-select>
             </el-form-item>
@@ -203,12 +213,109 @@
           </el-col>
           <el-col :span="12">
             <el-form-item prop="workingHours" label="工作时间" :label-width="formLabelWidth">
-              <el-input v-model="currentBus.workingHours"></el-input>
+              <el-input v-model="currentEm.workingHours"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-form-item prop="description" label="职位描述" :label-width="formLabelWidth">
-          <el-input type="textarea" :rows="4" v-model="currentBus.description"></el-input>
+          <el-input type="textarea" :rows="4" v-model="currentEm.description"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button size="mini" @click="toCancel('ruleForm')">取 消</el-button>
+        <el-button size="mini" type="primary" @click="tosave('ruleForm')">确 定</el-button>
+      </div>
+    </el-dialog>
+     <!-- 导入模态框 -->
+    <el-dialog title="导入招聘" :visible.sync="addVisible" width="60%" :before-close="beforeClose">
+      <el-form :model="currentEm" :rules="rules" ref="ruleForm">
+        <el-form-item prop="title" label="兼职名称" :label-width="formLabelWidth">
+          <el-input v-model="currentEm.title"></el-input>
+        </el-form-item>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item prop="job" clearable required label="选择工种" :label-width="formLabelWidth">
+              <el-select 
+                clearable 
+                v-model="currentEm.job" 
+                placeholder="请选择工种信息">
+                <el-option
+                  v-for="item in jobtypeData"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.name">
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item prop="num" label="招聘人数" :label-width="formLabelWidth">
+              <el-input v-model="currentEm.num"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item prop="businessId" clearable required label="招聘公司" :label-width="formLabelWidth">
+              <el-select 
+                clearable 
+                v-model="currentEm.businessId" 
+                placeholder="请选择工种信息">
+                <el-option
+                  v-for="item in businessData"
+                  :key="item"
+                  :label="item"
+                  :value="item">
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item prop="salary" label="薪资水平" :label-width="formLabelWidth">
+              <el-input v-model="currentEm.salary"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-form-item prop="welfare" label="职位标签" :label-width="formLabelWidth">
+          <el-input v-model="currentEm.welfare"></el-input>
+        </el-form-item>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item prop="contactPhone" label="联系方式" :label-width="formLabelWidth">
+              <el-input v-model="currentEm.contactPhone"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item prop="contactName" label="联系人姓名" :label-width="formLabelWidth">
+              <el-input v-model="currentEm.contactName"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item clearable required label="招聘时长" :label-width="formLabelWidth">
+              <div class="block">
+                <el-date-picker
+                  v-model="value2"
+                  type="daterange"
+                  align="right"
+                  unlink-panels
+                  range-separator="-"
+                  start-placeholder="开始日期"
+                  end-placeholder="结束日期"
+                  :picker-options="pickerOptions">
+                </el-date-picker>
+              </div>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item prop="workingHours" label="工作时间" :label-width="formLabelWidth">
+              <el-input v-model="currentEm.workingHours"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-form-item prop="description" label="职位描述" :label-width="formLabelWidth">
+          <el-input type="textarea" :rows="4" v-model="currentEm.description"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -241,7 +348,7 @@ export default {
       //招聘信息数组
       employmentData:[],
       //当前查看或修改的对象
-      currentBus:{},
+      currentEm:{},
       //模态框显示与隐藏
       seeVisible:false,
       //批量删除ids
@@ -260,6 +367,8 @@ export default {
       formLabelWidth:'100px',
       //修改模态框显示与隐藏
       editVisible:false,
+      //导入模态框显示与隐藏
+      addVisible:false,
       //关键字下拉框
       input: '',
       pickerOptions: {
@@ -348,20 +457,24 @@ export default {
     tosave(formName){
       this.$refs[formName].validate(async (valid) => {
         if (valid) {
+          delete this.currentEm.startTime;
+          delete this.currentEm.endTime;
+          delete this.currentEm.publishTime;
           //保存
           try {
-            let res = await saveOrUpdateEmployment(this.currentBus);
+            let res = await saveOrUpdateEmployment(this.currentEm);
             if(res.status === 200){
               this.findAllEm();
               this.editVisible = false;
-              config.successMsg(this,'修改成功');
+              this.addVisible = false;
+              config.successMsg(this,'保存成功');
                   
             }else{
-              config.errorMsg(this,'修改失败');
+              config.errorMsg(this,'保存失败');
             }
           } catch (error) {
             console.log(error);
-            config.errorMsg(this,'修改错误');
+            config.errorMsg(this,'保存错误');
           }
         } else {
           console.log('error submit!!');
@@ -369,17 +482,23 @@ export default {
         }
       });
     },
+    toAdd(){
+      this.currentEm = {};
+      this.addVisible = true;
+    },
     //右上角，模态框想关闭之前
     beforeClose(){
       //重置表单验证
       this.$refs['ruleForm'].resetFields();
       this.editVisible = false;
+      this.addVisible = false;
     },
     //取消或者关闭模态框
     toCancel(formName){
       //重置表单验证
       this.$refs[formName].resetFields();
       this.editVisible = false;
+      this.addVisible = false;
     },
     //输入关键字发生改变
     inputChange(input){
@@ -459,12 +578,12 @@ export default {
     },
     //查看
     toSee(row){
-      this.currentBus = {...row};
+      this.currentEm = {...row};
       this.seeVisible = true;
     },
     //修改确定
     toEdit(row){
-      this.currentBus = {...row};
+      this.currentEm = {...row};
       this.editVisible = true;
     },
     //删除
@@ -567,17 +686,25 @@ export default {
           item.publishTime = item.publishTime.slice(0,10);
         })
 
-        // //审核状态数组
-        // let auditStatusArr = res.data.map((item)=>{
-        //   return item.auditStatus;
-        // });
-        // this.auditStatusData = [...new Set(auditStatusArr)];
+         //招聘公司数组
+        let businessArr = res.data.map((item)=>{
+          return item.businessId;
+        });
+        this.businessData = [...new Set(businessArr)];
+
+        //审核状态数组
+        let auditStatusArr = res.data.map((item)=>{
+          return item.auditStatus;
+        });
+        this.auditStatusData = [...new Set(auditStatusArr)];
         
-        // //状态数组
-        // let statusArr = res.data.map((item)=>{
-        //   return item.status;
-        // });
-        // this.statusData = [...new Set(statusArr)];
+        //状态数组
+        let statusArr = res.data.map((item)=>{
+          return item.status;
+        });
+        this.statusData = [...new Set(statusArr)];
+
+
         this.currentPage = 1;
       }catch(error){
         config.errorMsg(this,'查找错误');
