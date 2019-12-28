@@ -2,43 +2,28 @@
  * @Author: liuyr 
  * 商家列表页面
  * @Date: 2019-12-23 17:11:53 
- * @Last Modified by: tangjs
- * @Last Modified time: 2019-12-27 21:41:29
+ * @Last Modified by: Chris
+ * @Last Modified time: 2019-12-28 15:28:12
  */
 <template>
-  <div id="businessList">  
+  <div id="businessList">
     <div class="searchDiv">
       <el-select @change="provinceChange" size="mini" v-model="province" clearable placeholder="省份">
         <el-option
           v-for="item in provinceData"
           :key="item.id"
           :label="item.name"
-          :value="item.name">
-        </el-option>
+          :value="item.name"
+        ></el-option>
       </el-select>
       <el-select @change="cityChange" size="mini" v-model="city" clearable placeholder="城市">
-        <el-option
-          v-for="item in cityData"
-          :key="item.id"
-          :label="item.name"
-          :value="item.name">
-        </el-option>
+        <el-option v-for="item in cityData" :key="item.id" :label="item.name" :value="item.name"></el-option>
       </el-select>
       <el-select @change="industryChange" size="mini" v-model="industry" clearable placeholder="行业">
-        <el-option
-          v-for="item in industryData"
-          :key="item"
-          :label="item"
-          :value="item">
-        </el-option>
+        <el-option v-for="item in industryData" :key="item" :label="item" :value="item"></el-option>
       </el-select>
       <el-select @change="scaleChange" size="mini" v-model="scale" clearable placeholder="规模">
-        <el-option
-          v-for="item in scaleData"
-          :key="item"
-          :label="item"
-          :value="item">
-        </el-option>
+        <el-option v-for="item in scaleData" :key="item" :label="item" :value="item"></el-option>
       </el-select>
     </div>
     <div class="tableDiv">
@@ -47,12 +32,9 @@
         :data="businessList"
         tooltip-effect="dark"
         style="width: 100%"
-        @selection-change="SelectionChange">
-        <el-table-column
-          align="center"
-          type="selection"
-          width="55">
-        </el-table-column>
+        @selection-change="selectionChange"
+      >
+        <el-table-column align="center" type="selection" width="55"></el-table-column>
         <el-table-column align="center" prop="name" label="企业名称"></el-table-column>
         <el-table-column align="center" prop="contactName" label="联系人"></el-table-column>
         <el-table-column align="center" prop="industry" label="行业"></el-table-column>
@@ -73,43 +55,39 @@
         </el-table-column>
       </el-table>
     </div>
-    <div class="footerDiv"> 
+    <div class="footerDiv">
       <div class="btnDiv">
         <el-button @click="toBatchDelete" size="mini" type="danger" plain>批量删除</el-button>
       </div>
       <div class="pageDiv">
         <el-pagination
-          :page-size = "pageSize"
+          :page-size="pageSize"
+          :current-page.sync="currentPage"
           background
-          @current-change = "pageChange" 
-          :current-page.sync="currentPage" 
+          @current-change="pageChange"
           layout="prev, pager, next"
-          :total="businessData.length">
-        </el-pagination>
+          :total="businessData.length"
+        ></el-pagination>
       </div>
     </div>
-    <el-dialog
-      :title="currentBus.name"
-      :visible.sync="seeVisible">
+    <el-dialog :title="currentBus.name" :visible.sync="seeVisible">
       <div class="seeDiv">
-        <span>行业类型:</span>
+        <span>行业类型：</span>
         {{currentBus.industry}}
       </div>
       <div class="seeDiv">
-        <span>成立时间:</span>
+        <span>成立时间：</span>
         {{currentBus.establishedTime}}
       </div>
       <div class="seeDiv">
-        <span>注册资本:</span>
+        <span>注册资本：</span>
         {{currentBus.registeredCapital}}
       </div>
       <div class="seeDiv">
-        <span>公司规模:</span>
+        <span>公司规模：</span>
         {{currentBus.scale}}
       </div>
-      <div class="descDiv">&nbsp;&nbsp;&nbsp;&nbsp;
-        {{currentBus.description}}
-      </div>
+      <div class="descDiv">&nbsp;&nbsp;&nbsp;&nbsp;{{currentBus.description}}</div>
       <div class="imgDiv">
         <a :href="currentBus.businessLicense" target="_blank">
           <img :src="currentBus.businessLicense" alt width="200" height="150" />
@@ -117,469 +95,454 @@
       </div>
     </el-dialog>
     <!-- 修改模态框 -->
-    <el-dialog title="修改商家信息" :visible.sync="editVisible" width="60%" :before-close="beforeClose">
-      <el-form :model="currentBus" :rules="rules" ref="ruleForm">
+    <el-dialog title="修改商家信息" :visible.sync="editVisible" width="60%">
+    <el-form :model="currentBus" :rules="rules" ref="ruleForm">
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-form-item prop="name" label="公司名称" :label-width="formLabelWidth">
-              <el-input v-model="currentBus.name"></el-input>
+            <el-form-item label="公司名称" :label-width="formLabelWidth" prop="name">
+            <el-input v-model="currentBus.name"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item prop="industry" label="所属行业" :label-width="formLabelWidth">
+              <el-form-item label="所属行业" :label-width="formLabelWidth" prop="industry">
               <el-input v-model="currentBus.industry"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-form-item prop="scale" label="公司规模" :label-width="formLabelWidth">
-              <el-input v-model="currentBus.scale"></el-input>
+            <el-form-item label="公司规模" :label-width="formLabelWidth" prop="scale">
+            <el-input v-model="currentBus.scale"></el-input>
             </el-form-item>
           </el-col>
+          
           <el-col :span="12">
             <el-form-item required label="所在城市" :label-width="formLabelWidth">
               <el-row>
                 <el-col :span="12">
                   <el-form-item prop="province">
-                    <el-select 
-                      clearable 
-                      @change="dialogProChange" 
-                      v-model="currentBus.province" 
-                      placeholder="请选择省份">
+                    <el-select
+                      clearable
+                      @change="dialogProChange"
+                      v-model="currentBus.province"
+                      placeholder="请选择省份"
+                    >
                       <el-option
                         v-for="item in provinceData"
                         :key="item.id"
                         :label="item.name"
-                        :value="item.id">
-                      </el-option>
+                        :value="item.id"
+                      ></el-option>
                     </el-select>
                   </el-form-item>
                 </el-col>
-                <el-col :span="12"> 
+                <el-col :span="12">
                   <el-form-item prop="city">
                     <el-select clearable v-model="currentBus.city" placeholder="请选择城市">
                       <el-option
-                        v-for="item in provincecCityData"
+                        v-for="item in provinceCityData"
                         :key="item.id"
                         :label="item.name"
-                        :value="item.name">
-                      </el-option>
+                        :value="item.name"
+                      ></el-option>
                     </el-select>
                   </el-form-item>
                 </el-col>
-              </el-row>        
+              </el-row>
             </el-form-item>
           </el-col>
-        </el-row>
 
+          </el-row>
+       
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-form-item prop="contactName" label="联系人" :label-width="formLabelWidth">
-              <el-input v-model="currentBus.contactName"></el-input>
+            <el-form-item label="联系人" :label-width="formLabelWidth"  prop="contactName">
+            <el-input v-model="currentBus.contactName"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item prop="contactPhone" label="联系电话" :label-width="formLabelWidth">
-              <el-input v-model="currentBus.contactPhone"></el-input>
+            <el-form-item label="联系电话" :label-width="formLabelWidth"  prop="contactPhone">
+            <el-input v-model="currentBus.contactPhone"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
-
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-form-item prop="location" label="详细地址" :label-width="formLabelWidth">
-              <el-input type="textarea" :rows="4" v-model="currentBus.location"></el-input>
+            <el-form-item label="详细地址" :label-width="formLabelWidth" prop="location">
+            <el-input type="textarea" :rows="4"  v-model="currentBus.location"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item prop="description" label="公司简介" :label-width="formLabelWidth">
-              <el-input type="textarea" :rows="4" v-model="currentBus.description"></el-input>
+            <el-form-item label="公司简介" :label-width="formLabelWidth" prop="description">
+            <el-input type="textarea" :rows="4" v-model="currentBus.description"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button size="mini" @click="toCancel('ruleForm')">取 消</el-button>
-        <el-button size="mini" type="primary" @click="tosave('ruleForm')">确 定</el-button>
-      </div>
-    </el-dialog>
+      <!-- <el-form-item label="活动区域" :label-width="formLabelWidth">
+        <el-select v-model="form.region" placeholder="请选择活动区域">
+          <el-option label="区域一" value="shanghai"></el-option>
+          <el-option label="区域二" value="beijing"></el-option>
+        </el-select>
+      </el-form-item> -->
+    </el-form>
+    <div slot="footer" class="dialog-footer" size = 'mini'>
+      <el-button @click="editVisible = false" size="mini">取 消</el-button>
+      <el-button type="primary" @click="toSave('ruleForm')" size="mini">确 定</el-button>
+    </div>
+  </el-dialog>
   </div>
 </template>
 
 <script>
-import {findAllProvince} from '@/api/province.js';
-import {findAllCity,findCityByProvinceId} from '@/api/city.js';
-import {findAllBusiness,
-  saveOrUpdateBusiness,
+import { findAllProvince } from "@/api/province.js";
+import { findAllCity,findCityByProvinceId } from "@/api/city.js";
+import {
+  findAllBusiness,
   findBusinessByProvince,
-  deleteBusinessById,
   findBusinessByCity,
+  findBusinessByIndustry,
   findBusinessByScale,
-  findBusinessByIndustry} 
-  from '@/api/business.js';
-import config from '@/utils/config.js';
+  deleteBusinessById,
+  saveOrUpdateBusiness
+} from "@/api/business.js";
+import config from "@/utils/config.js";
 export default {
   data() {
     return {
+      // 校验规则
+      rules: {
+          name: [
+            { required: true, message: '请输入公司名称', trigger: 'blur' },  
+          ],
+          industry: [
+            { required: true, message: '请输入行业类型', trigger: 'blur' },  
+          ],
+          scale: [
+            { required: true, message: '请输入公司规模', trigger: 'blur' },  
+          ],
+          contactName: [
+            { required: true, message: '请输入联系人', trigger: 'blur' },  
+          ],
+          contactPhone: [
+            { required: true, message: '请输入联系电话', trigger: 'blur' },  
+          ],
+          location: [
+            { required: true, message: '请输入公司地址', trigger: 'blur' },  
+          ],
+          description: [
+            { required: true, message: '请输入公司简介', trigger: 'blur' },  
+          ],
+          province: [
+            { required: true, message: '请选择省份', trigger: 'change' }
+          ],
+          city: [
+            { required: true, message: '请选择城市', trigger: 'change' }
+          ],
+        },
       //省份
-      province:'',
+      province: "",
       //城市
-      city:'',
+      city: "",
       //行业
-      industry:'',
+      industry: "",
       //规模
-      scale:'',
+      scale: "",
       //省份数组
-      provinceData:[],
+      provinceData: [],
       //城市数组
-      cityData:[],
+      cityData: [],
       //行业数组
-      industryData:[],
+      industryData: [],
       //规模数组
-      scaleData:[],
+      scaleData: [],
       //商家数组
-      businessData:[],
+      businessData: [],
       //商家列表，表格数据
-      // businessList:[],
+      // businessList: [],
       //当前页
-      currentPage:1,
+      currentPage: 1,
+      //每页条数
+      pageSize: config.pageSize,
       //批量删除ids
       ids: [],
       //当前查看或修改的对象
-      currentBus:{},
-      //查看模态框显示与隐藏
-      seeVisible:false,
-      //每页条数
-      pageSize:config.pageSize,
-      //修改模态框标题名称所占宽度
+      currentBus: {},
+      //查看模态框显示与否
+      seeVisible: false,
+      // 修改模态框标题名称所占宽度
       formLabelWidth:'80px',
-      //修改模态框显示与隐藏
+      //修改模态框显示与否
       editVisible:false,
-      //省份对应的城市信息
-      provincecCityData:[],
-      //校验规则
-      rules: {
-        name: [
-          { required: true, message: '请输入公司名称', trigger: 'blur' },
-        ],
-        industry: [
-          { required: true, message: '请输入行业类型', trigger: 'blur' },
-        ],
-        scale: [
-          { required: true, message: '请输入公司规模', trigger: 'blur' },
-        ],
-        contactName: [
-          { required: true, message: '请输入联系人', trigger: 'blur' },
-        ],
-        contactPhone: [
-          { required: true, message: '请输入联系电话', trigger: 'blur' },
-        ],
-        location: [
-          { required: true, message: '请输入详细地址', trigger: 'blur' },
-        ],
-        description: [
-          { required: true, message: '请输入公司简介', trigger: 'blur' },
-        ],
-        province: [
-          { required: true, message: '请选择省份', trigger: 'change' }
-        ],
-        city: [
-          { required: true, message: '请选择城市', trigger: 'change' }
-        ],
-      }
+      // 省份对应的城市信息
+      provinceCityData:[],
     };
   },
   computed: {
     //分页数据
-    businessList(){
-      //获取表单内容
+    businessList() {
       let temp = [...this.businessData];
-      //截取数组
       let page = this.currentPage;
       let pageSize = config.pageSize;
-      return temp.slice((page-1) * pageSize,page * pageSize);
+      return temp.slice((page - 1) * pageSize, page * pageSize);
     }
   },
   methods: {
-    //右上角，模态框想关闭之前
-    beforeClose(){
-      //重置表单验证
-      this.$refs['ruleForm'].resetFields();
-      this.editVisible = false;
-    },
-    //取消或者关闭模态框
-    toCancel(formName){
-      //重置表单验证
-      this.$refs[formName].resetFields();
-      this.editVisible = false;
-    },
     //保存
-    tosave(formName){
-      this.$refs[formName].validate(async (valid) => {
-        if (valid) {
-          //将省份province处理成省份名字在保存
-          let province = this.currentBus.province;
-          //如果省份发生更改
-          if(+province){
-            //将省份id处理成省份名字,过滤省份数组
-            let result = thi.provinceData.filter((item)=>{
-              return item.id === +province;
-            })[0];
-            //result 是省份对象
-            this.currentBus.province = result.name;
-          }
-          //保存
-          try {
-            let res = await saveOrUpdateBusiness(this.currentBus);
-            if(res.status === 200){
-              this.findAllBus();
-              this.editVisible = false;
-              config.successMsg(this,'修改成功');
-              
-            }else{
-              config.errorMsg(this,'修改失败');
-            }
-          } catch (error) {
-            console.log(error);
-            config.errorMsg(this,'修改错误');
-          }
-        } else {
-          console.log('error submit!!');
-          return false;
+    toSave(formName){
+      this.$refs[formName].validate(async valid => {
+          if (valid) {
+            //将省份id处理为省份名字再保存
+      let province = this.currentBus.province;
+      // console.log(province);
+      if(+province){
+        // 将省份id处理为省份名字，过滤省份数组
+        let result = this.provinceData.filter((item)=>{
+          return item.id === +province;
+        })[0];
+        //result 是省份对象
+        this.currentBus.province = result.name;
+      }
+      // 保存
+      try {
+        let res = await saveOrUpdateBusiness(this.currentBus);
+        if(res.status===200){
+        this.findAllBus();
+        this.editVisible = false;
+        config.successMsg(this,'修改成功');
+        }else{
+          config.errorMsg(this,"修改失败");
         }
-      });
+      } catch (error) {
+        config.errorMsg(this,"修改失败");
+      }
+          } else {
+            console.log('error submit!!');
+            return false;
+          }
+        });
+      
     },
-    //模态框省份发生改变
+    // 模态框省份发生改变
     async dialogProChange(val){
       // console.log(val);
-      //重置城市下拉列表
+      // 通过省份id获取城市
+      // 重置城市下拉列表
       this.currentBus.city = '';
-      //通过省份id去获取城市
       try {
         let res = await findCityByProvinceId({provinceId:val});
-        this.provincecCityData = res.data;
+        this.provinceCityData = res.data;
       } catch (error) {
-        
-        config.errorMsg(this,'通过省份查找城市失败');
+        config.errorMsg(this,"通过省份查找城市失败");
       }
-
     },
-    //分页发生变化
-    pageChange(page){
+    // 页数发生改变
+    pageChange(page) {
       this.currentPage = page;
     },
     //省份发生改变
-    async provinceChange(val){
-      // val就是当前option的val值
-      // Console.log(val);
+    async provinceChange(val) {
       this.city = "";
       this.industry = "";
       this.scale = "";
-      if(val){
+      //val 是option的value值
+      if (val) {
         try {
-          let res = await findBusinessByProvince({province:val});
+          let res = await findBusinessByProvince({ province: val });
           this.businessData = res.data;
           this.currentPage = 1;
         } catch (error) {
-          config.errorMsg(this,'通过省份查找商家信息错误');
+          config.errorMsg(this, "通过省份查找商家信息错误");
         }
-      }
-      else{
+      } else {
         this.findAllBus();
       }
     },
     //城市发生改变
-    async cityChange(val){
+    async cityChange(val) {
       this.province = "";
       this.industry = "";
       this.scale = "";
-      // val就是当前option的val值
-      // Console.log(val);
-      if(val){
+      //val 是option的value值
+      if (val) {
         try {
-          let res = await findBusinessByCity({city:val});
+          let res = await findBusinessByCity({ city: val });
           this.businessData = res.data;
           this.currentPage = 1;
         } catch (error) {
-          config.errorMsg(this,'通过城市查找商家信息错误');
+          config.errorMsg(this, "通过城市查找商家信息错误");
         }
-      }
-      else{
+      } else {
         this.findAllBus();
       }
     },
     //行业发生改变
-    async industryChange(val){
+    async industryChange(val) {
       this.province = "";
       this.city = "";
       this.scale = "";
-      // val就是当前option的val值
-      // Console.log(val);
-      if(val){
+      //val 是option的value值
+      if (val) {
         try {
-          let res = await findBusinessByIndustry({industry:val});
+          let res = await findBusinessByIndustry({ industry: val });
           this.businessData = res.data;
           this.currentPage = 1;
         } catch (error) {
-          config.errorMsg(this,'通过行业查找商家信息错误');
+          config.errorMsg(this, "通过行业查找商家信息错误");
         }
-      }
-      else{
+      } else {
         this.findAllBus();
       }
     },
     //规模发生改变
-    async scaleChange(val){
+    async scaleChange(val) {
       this.province = "";
       this.city = "";
       this.industry = "";
-      // val就是当前option的val值
-      // Console.log(val);
-      if(val){
+      //val 是option的value值
+      if (val) {
         try {
-          let res = await findBusinessByScale({scale:val});
+          let res = await findBusinessByScale({ scale: val });
           this.businessData = res.data;
           this.currentPage = 1;
         } catch (error) {
-          config.errorMsg(this,'通过规模查找商家信息错误');
+          config.errorMsg(this, "通过规模查找商家信息错误");
         }
-      }
-      else{
+      } else {
         this.findAllBus();
       }
     },
     //查看
-    toSee(row){
-      this.currentBus = {...row};
+    toSee(row) {
+      this.currentBus = { ...row };
       this.seeVisible = true;
     },
     //编辑
-    toEdit(row){
-      this.currentBus = {...row};
+    toEdit(row) {
+      this.currentBus = { ...row };
       this.editVisible = true;
     },
     //删除
-    toDelete(id){
-      this.$confirm('是否删除该记录?', '提示', {
-          confirmButtonText: '删除',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(async () => {
+    toDelete(id) {
+      // alert("删除");
+      this.$confirm("是否删除该记录?", "提示", {
+        confirmButtonText: "删除",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(async () => {
           //访问后台接口
           try {
-            let res = await deleteBusinessById({id:id});
-            if (res.status===200) {
-              config.successMsg(this,'删除成功');
+            let res = await deleteBusinessById({ id: id });
+            if (res.status === 200) {
+              config.successMsg(this, "删除成功");
               this.findAllBus();
             } else {
-              config.errorMsg(this,'删除失败');
+              config.errorMsg(this, "删除失败");
             }
           } catch (error) {
-            config.errorMsg(this,'删除错误，该商家有招聘信息');
+            config.errorMsg(this, "删除失败");
           }
-        }).catch(() => {
+        })
+        .catch(() => {
           this.$message({
-            type: 'info',
-            message: '已取消删除'
-          });          
+            type: "info",
+            message: "已取消删除"
+          });
         });
     },
     //批量删除
-    toBatchDelete(){
-      //获取要批量删除的id
+    toBatchDelete() {
+      //获取要批量删除的id  this.ids
       let ids = this.ids;
-      if(ids.length > 0){
-        this.$alert('是否删除', '提示', {
-          confirmButtonText: '删除',
+      if (ids.length > 0) {
+        this.$alert("是否删除？", "提示", {
+          confirmButtonText: "删除",
           callback: action => {
-            if(action === 'confirm'){
+            if (action === "confirm") {
               let result = [];
               ids.forEach(async id => {
-                 try {
-                  let res = await deleteBusinessById({id:id});
+                try {
+                  let res = await deleteBusinessById({ id: id });
                   result.push(res.status);
                 } catch (error) {
                   result.push(500);
                 }
               });
-              setTimeout(()=>{
-                console.log(result);
+              setTimeout(() => {
+                // console.log(result);
                 //判断是否都是200
-                let resu = result.every((item)=>{
+                let resu = result.every(item => {
                   return item === 200;
-                })
-                if(resu){
-                  config.successMsg(this,'批量删除成功');
-                }else{
-                  config.errorMsg(this,'批量删除错误')
+                });
+                if (resu) {
+                  config.successMsg(this, "批量删除成功");
+                } else {
+                  config.errorMsg(this, "批量删除失败");
                 }
                 this.findAllBus();
-              },2000)
+              }, 2000);
             }
           }
         });
-      }else{
+      } else {
         this.$message({
-          message: '请勾选需要删除的数据',
-          type: 'warning'
+          message: "请选中要删除的数据",
+          type: "warning"
         });
       }
     },
     //复选框选中切换
-    SelectionChange(val){
-      //val就是选中的对象组成的数组
+    selectionChange(val) {
+      //val 就是选中的对象组成的数组
       // console.log(val);
-      let ids = val.map(item=>{
+      let ids = val.map(item => {
         return item.id;
-      })
+      });
       this.ids = ids;
     },
-
-    //查找所有的省份信息
-    async findAllpro(){
-      try{
+    //查找所有省份信息
+    async findAllPro() {
+      try {
         let res = await findAllProvince();
         this.provinceData = res.data;
-      }catch(error){
-        config.errorMsg(this,'查找错误');
+      } catch (error) {
+        config.errorMsg(this, "查找错误");
       }
     },
-
-    //查找所有的城市信息
-    async findAllCi(){
-      try{
+    //查找所有城市信息
+    async findAllCi() {
+      try {
         let res = await findAllCity();
         this.cityData = res.data;
-      }catch(error){
-        config.errorMsg(this,'查找错误');
+      } catch (error) {
+        config.errorMsg(this, "查找错误");
       }
     },
-
     //查找所有的商家信息
-    async findAllBus(){
-      try{
+    async findAllBus() {
+      try {
         let res = await findAllBusiness();
         this.businessData = res.data;
         this.currentPage = 1;
         //行业数组
-        let industryArr = res.data.map((item)=>{
+        let industryArr = res.data.map(item => {
           return item.industry;
         });
+        //去重
         this.industryData = [...new Set(industryArr)];
         //规模数组
-        let scaleArr = res.data.map((item)=>{
+        let scaleArr = res.data.map(item => {
           return item.scale;
         });
+        //去重
         this.scaleData = [...new Set(scaleArr)];
-
-      }catch(error){
-        config.errorMsg(this,'查找错误');
+      } catch (error) {
+        config.errorMsg(this, "查找错误");
       }
-    },
+    }
   },
   created() {
-    this.findAllpro();
+    this.findAllPro();
     this.findAllCi();
     this.findAllBus();
   },
@@ -587,20 +550,19 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-.tableDiv{
+.tableDiv {
   margin-top: 10px;
 }
-.footerDiv{
-  margin-top: 10px;
+.footerDiv {
   overflow: hidden;
-  .btnDiv{
+  margin-top: 10px;
+  .btnDiv {
     float: left;
   }
-  .pageDiv{
+  .pageDiv {
     float: right;
   }
 }
-
 .seeDiv {
   border-bottom: 1px solid #ccc;
   line-height: 30px;
