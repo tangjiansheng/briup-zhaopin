@@ -2,7 +2,7 @@
  * @Author: RealsenWang 
  * @Date: 2019-12-27 20:24:26 
  * @Last Modified by: RealsenWang
- * @Last Modified time: 2019-12-28 10:09:26
+ * @Last Modified time: 2019-12-28 15:59:23
  */
 
 <template>
@@ -353,6 +353,7 @@ export default {
       this.$refs[formName].resetFields();
       this.addVisible = false;
       this.editVisible = false;
+      this.currentJob = {};
     },
     // 页数发生改变
     pageChange(page) {
@@ -458,6 +459,7 @@ export default {
               this.findAllJob();
               this.addsVisible = false;
               config.successMsg(this, "修改成功");
+              this.$refs[formName].resetFields();
             } else {
               config.errorMsg(this, "修改失败");
             }
@@ -471,6 +473,7 @@ export default {
         }
       });
       this.editVisible = false;
+      this.addVisible = false;
     },
     //批量删除
     toBatchDelete() {
