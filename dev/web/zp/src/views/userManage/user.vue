@@ -2,14 +2,14 @@
  * @Author: RealsenWang 
  * @Date: 2019-12-27 20:24:26 
  * @Last Modified by: RealsenWang
- * @Last Modified time: 2019-12-28 15:59:23
+ * @Last Modified time: 2019-12-29 10:23:28
  */
 
 <template>
   <div id="userList">
     <div class="btn">
-      <el-button @click="toAdd()" size="small" type="primary" icon="el-icon-info" style="background:rgb(235, 108, 50)">新增用户</el-button>
-      <el-button @click="toAdd()" size="small" type="primary" icon="el-icon-info">导入用户</el-button>
+      <el-button @click="toAdd()" size="medium" type="primary" icon="el-icon-info" style="background:rgb(245, 157, 50)">新增用户</el-button>
+      <el-button @click="toAdd()" size="medium" type="primary" icon="el-icon-info">导入用户</el-button>
     </div>
     <!-- {{searchTypeValue}} -->
     <!-- {{educationData}} -->
@@ -307,8 +307,10 @@ export default {
     inputChange(searchKeyword){
       this.findAllJob();
     },
-    //通过招聘标题发生改变
+    //通过电话标题发生改变
     async searchForJobhunter(searchKeyword){
+      this.gender = '';
+      this.education = '';
       if(this.searchType === "2"){
         if(searchKeyword){
           
@@ -462,14 +464,17 @@ export default {
               this.$refs[formName].resetFields();
             } else {
               config.errorMsg(this, "修改失败");
+              this.$refs[formName].resetFields();
             }
           } catch (error) {
             console.log(error);
             config.errorMsg(this, "修改失败");
+            this.$refs[formName].resetFields();
           }
           } else {
           console.log("error submit!!");
           return false;
+          this.$refs[formName].resetFields();
         }
       });
       this.editVisible = false;
@@ -536,7 +541,7 @@ export default {
 <style lang="scss" scoped>
 .btn{
   float: right;
-  margin: 10px 0;
+  padding-top: 3px;
 }
 .tableDiv {
   margin-top: 10px;
@@ -552,11 +557,14 @@ export default {
   }
 }
   .searchDiv{
+    float: left;
     display: inline-block;
-    width: 100%;
+    margin-bottom: 10px;
+    // width: 100%;
     .selectDiv{
       width: 100%;
       .input-with-select{
+        margin-left: 10px;
         float: right;
         width: 350px;
       } 

@@ -3,13 +3,14 @@
  * 福利管理页面
  * @Date: 2019-12-23 17:11:53 
  * @Last Modified by: liuyr
- * @Last Modified time: 2019-12-28 14:56:26
+ * @Last Modified time: 2019-12-29 16:26:12
  */
 <template>
   <div id="moduleBoon">
+    <!-- {{welfareData}} -->
  <div class="searchDiv">
       <el-select @change="idChange" size="small" v-model="welfare" clearable placeholder="全部">
-        <!-- {{welfareData}} -->
+        
         <el-option
           v-for="item in welfareData"
           :key="item.id"
@@ -104,7 +105,7 @@ export default {
       if (val) {
         try {
           let res = await findWelfareById({ id: val });
-          this.welfareData = res.data;
+          this.welfareData = [res.data];
           this.currentPage = 1;
         } catch (error) {
           config.errorMsg(this, "通过id查找福利信息错误");
@@ -206,6 +207,9 @@ export default {
 // .tableDiv{
 //   margin-top:20px ;
 // }
+.tableDiv {
+  margin-top: 10px;
+}
 .footer{
   overflow: hidden;
   .button{
@@ -214,13 +218,11 @@ export default {
   }
   .pagi {
   float: right;
-  margin-right: 300px;
+  margin-right: 30%;
   margin-top: 10px;
 }
 
 }
-.tableDiv {
-  margin-top: 10px;
-}
+
 </style>
            
