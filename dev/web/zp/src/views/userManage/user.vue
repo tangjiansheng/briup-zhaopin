@@ -2,14 +2,14 @@
  * @Author: RealsenWang 
  * @Date: 2019-12-27 20:24:26 
  * @Last Modified by: RealsenWang
- * @Last Modified time: 2019-12-29 19:51:34
+ * @Last Modified time: 2019-12-29 20:45:14
  */
 
 <template>
   <div id="userList">
     <div class="btn">
       <el-button @click="toAdd()" size="medium" type="primary" icon="el-icon-info" style="background:rgb(245, 157, 50)">新增用户</el-button>
-      <el-button @click="toAdd()" size="medium" type="primary" icon="el-icon-info">导入用户</el-button>
+      <el-button @click="toImport()" size="medium" type="primary" icon="el-icon-info">导入用户</el-button>
     </div>
     <!-- {{searchTypeValue}} -->
     <!-- {{educationData}} -->
@@ -196,48 +196,19 @@
       </div>
     </el-dialog>
   <!-- 修改模态框 -->
-    <el-dialog title="修改用户信息" :visible.sync="editVisible" width="60%" :before-close="beforeClose">
-      <el-form :model="currentJob" :rules="rules" ref="ruleForm">
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item prop="username" label="用户名" :label-width="formLabelWidth">
-              <el-input v-model="currentJob.username"></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item prop="realname" label="姓名" :label-width="formLabelWidth">
-              <el-input v-model="currentJob.realname"></el-input>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item prop="telephone" label="手机号" :label-width="formLabelWidth">
-              <el-input v-model="currentJob.telephone"></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item prop="gender" label="性别" :label-width="formLabelWidth">
-              <el-input v-model="currentJob.gender"></el-input>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item prop="birth" label="出生年月" :label-width="formLabelWidth">
-              <el-input v-model="currentJob.birth"></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item prop="education" label="最高学历" :label-width="formLabelWidth">
-              <el-input v-model="currentJob.education"></el-input>
-            </el-form-item>
-          </el-col>
-        </el-row>
-      </el-form>
+    <el-dialog title="导入用户信息" :visible.sync="editVisible" width="26%" :before-close="beforeClose">
+      <el-upload
+        class="upload-demo"
+        drag
+        action="https://jsonplaceholder.typicode.com/posts/"
+        multiple>
+        <i class="el-icon-upload"></i>
+        <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+        <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过500kb</div>
+      </el-upload>
       <div slot="footer" class="dialog-footer">
-        <el-button size="mini" @click="toCancel('ruleForm')">取 消</el-button>
-        <el-button size="mini" type="primary" @click="toSave('ruleForm')">确 定</el-button>
+        <el-button size="mini" @click="toCancelEdit('ruleForm')">取 消</el-button>
+        <el-button size="mini" type="primary" @click="toSaveEdit('ruleForm')">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -372,6 +343,12 @@ export default {
       this.editVisible = false;
       this.currentJob = {};
     },
+    toCancelEdit(){
+      this.editVisible = false;
+    },
+    toSaveEdit(){
+      this.editVisible = false;
+    },
     // 页数发生改变
     pageChange(page) {
       this.currentPage = page;
@@ -432,6 +409,9 @@ export default {
     toAdd(){
       this.currentJob = {};
       this.addVisible = true;
+    },
+    toImport(){
+      this.editVisible = true;
     },
     //删除
     toDelete(id) {
