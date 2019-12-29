@@ -8,8 +8,8 @@
 <template>
   <div id="recruitDoing">
     <div class="icon">
-      <el-button type="primary" size="medium" icon="el-icon-edit" class="put" @click="toAdd()" :visible.sync="addVisible" :before-close="beforeClose">发布职位</el-button>
-      <el-button type="primary" size="medium" icon="el-icon-edit" class="import" @click="toAdd()">导入职位</el-button>
+      <el-button type="primary" icon="el-icon-edit" class="put" @click="toAdd()" :visible.sync="addVisible" width="60%" :before-close="beforeClose">发布职位</el-button>
+      <el-button type="primary" icon="el-icon-edit" class="import" @click="toAdd()">导入职位</el-button>
     </div>
     <div class="searchDiv">
       <el-select @change="jobChange" v-model="jobtype" clearable placeholder="职位类型">
