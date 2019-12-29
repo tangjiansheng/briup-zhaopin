@@ -3,7 +3,7 @@
  * 客服列表页面
  * @Date: 2019-12-23 17:11:53 
  * @Last Modified by: liuyr
- * @Last Modified time: 2019-12-29 16:39:42
+ * @Last Modified time: 2019-12-29 20:01:39
  */
 <template>
 
@@ -18,16 +18,16 @@
      <div class="selectDiv">
        <div class="select1"
        <!-- 下拉框1 -->
-       <el-select  size="mini" @change="statusChange" v-model="status" clearable placeholder="在线">
+       <el-select  @change="statusChange" v-model="status" clearable placeholder="在线">
         <el-option v-for="item in statusData" :key="item" :label="item" :value="item"></el-option>
        </el-select>
        <!-- 下拉框2 -->
-       <el-select  size="mini" @change="genderChange" v-model="gender"  clearable placeholder="性别">
+       <el-select   @change="genderChange" v-model="gender"  clearable placeholder="性别">
         <el-option v-for="item in genderData" :key="item" :label="item" :value="item"></el-option>
        </el-select>
        <!-- 输入框 -->
       <div class="inputDiv">
-        <el-input  size="mini" clearable  placeholder="请输入关键字" @change="inputChange" v-model="inputWord" class="input-with-select">
+        <el-input   clearable  placeholder="请输入关键字" @change="inputChange" v-model="inputWord" class="input-with-select">
          <el-select clearable v-model="input2" slot="prepend" placeholder="关键字" class="choose">
         <el-option
                 v-for="item in options"
@@ -104,7 +104,7 @@
     
     <!-- 模态框1 -->
     <div>
-     <el-dialog title="添加客服" :visible.sync=" Visible1" :before-close="beforeClose" >
+     <el-dialog title="添加客服" :visible.sync=" Visible1" :before-close="beforeClose" width="40%" >
          <el-form :model="CustomerService" ref= "ruleForm">
             <el-form-item prop="username" label="用户名" :label-width="formLabelWidth">
             <el-input v-model="CustomerService.username" autocomplete="off"></el-input>
@@ -125,22 +125,24 @@
              </template>
           </el-form-item>
          </el-form>
-        <el-button @click="toAdd('ruleForm')" type="primary" >添加</el-button>
+        <el-button @click="toAdd('ruleForm')" type="primary" style="margin-left: 250px" >添加</el-button>
      </el-dialog>
     </div>
 
      <!-- 模态框2 -->
     <div>
        <el-dialog title="导入说明" :visible.sync="Visible2" width="30%" >
-               <span>使用导入功能时，请按照模板表格规定的字段
-               去填写对应信息，您可以点击按钮下载模板表格，
+               <span>使用导入功能时，请按照模板表格规定的字段去填写对应信息，
+               <br> 您可以点击按钮下载模板表格，<br>
                填写完后在下提交:</span>
-               <el-button size="mini" type="info" class="down">下载模板</el-button>
-               <el-upload class="upload-demo" drag action="https://jsonplaceholder.typicode.com/posts/" multiple>
-               <i class="el-icon-upload"></i>
-               <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
-               <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过500kb</div>
-</el-upload>
+               <el-button size="mini" type="info" class="down" style="margin-bottom:5px">下载模板</el-button>
+               
+               <el-upload style="margin-left:30px;"  class="upload-demo" drag action="https://jsonplaceholder.typicode.com/posts/" multiple>
+               <i class="el-icon-upload" ></i>
+               <div class="el-upload__text" >将文件拖到此处，或<em>点击上传</em></div>
+               </el-upload>
+               <el-button type="success" style="margin-left:155px" >开始导入</el-button>
+               
        </el-dialog>
       
     </div>
@@ -418,7 +420,7 @@ toDelete(id) {
 
 .selectDiv{
  margin-top: -30px;
- width: 50%;
+ width: 53%;
  display:inline-block;
 
 }
@@ -441,14 +443,18 @@ toDelete(id) {
 }
 
 .dialogDiv1{
-  
   .fenpei{
-    margin-top: -26px;
+    margin-top: -20px;
     float: right;
+    margin-bottom: 10px;
+  }
+  .table{
+     margin-bottom: 10px;
   }
   .pageDiv{
     float: right;
-    
+    margin-top: -8px;
   }
+  
 }
  </style>
