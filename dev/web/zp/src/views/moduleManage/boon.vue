@@ -3,11 +3,11 @@
  * 福利管理页面
  * @Date: 2019-12-23 17:11:53 
  * @Last Modified by: liuyr
- * @Last Modified time: 2019-12-29 16:26:12
+ * @Last Modified time: 2019-12-29 21:13:13
  */
 <template>
   <div id="moduleBoon">
-    <!-- {{welfareData}} -->
+    <!-- {{buttonData}} -->
  <div class="searchDiv">
       <el-select @change="idChange" size="small" v-model="welfare" clearable placeholder="全部">
         
@@ -32,16 +32,18 @@
         <el-table-column align="center" prop="status" label="状态" width="70"></el-table-column>
         <el-table-column align="center" label="操作" width="100">
           <template slot-scope="scope">
-            <el-button type="text" @click="toEdit(scope.row)" size="small">冻结</el-button>
+
+            <el-button type="text"  @click="changestatus(scope.row)" size="small">
+              {{buttonData[scope.$index]}}
+            </el-button>
           </template>
         </el-table-column>
- 
       </el-table>
 <div class="footer">
   <div class="button">
     <el-button @click="toBatchDelete" size="mini" type="danger">删除</el-button>
     </div>
-  <div class="pagi">
+<div class="pagi">
   <el-pagination
    @current-change="currentChange"
   :current-page.sync="currentPage"
@@ -50,9 +52,9 @@
   layout="pager"
   :total="welfareData.length">
 </el-pagination>
-      </div>
 </div>
-    </div>
+</div>
+</div>
   </div>
 </template>
 <script>
@@ -68,8 +70,10 @@ export default {
           currentPage: 1,
           //福利名称
           name :"",
+          //当前查看或修改的对象
+          currentwel:[],
           //状态
-          status : "",
+          status : [],
           //福利名称数组
           nameData :[],
           //状态数组
@@ -78,6 +82,8 @@ export default {
           welfareData : [],
           //福利列表
           moduleBoon :[],
+          //按钮数组
+          buttonData:[],
           //每页条数
           pageSize: config.pageSize,
           //批量删除ids
@@ -85,7 +91,7 @@ export default {
           //当前查看或修改的对象
           currentWel: {},
           //模态框显示与否
-           seeVisible: false
+          editVisible: false,
           
         }
   },
@@ -99,6 +105,7 @@ export default {
     }
     },
       methods: {
+      //按钮显示
       //福利名称改变
      async idChange(val) {
       //val 是option的value值
@@ -160,9 +167,25 @@ export default {
       // console.log(val);
       this.currentPage = val;
     },
-      toEdit(row) {
-      alert("操作");
-    },
+
+changestatus(val) {
+       console.log("val="+val);
+       var new_status = val.status;
+       if(val.status="使用中"){
+           new_status= "冻结中";
+       } else{
+           new_status= "使用中";
+       }
+       try{
+         let res = saveOrUpdateWelfare({id: val.id, status:new_status, name: val.name});
+         this.findAllWel();
+       }catch(err){
+         this.$notify.error({
+           title:"错误",
+           message:"修改失败",
+         });
+       }
+      },
     //复选框选中切换
     selectionChange(val) {
       //val 就是选中的对象组成的数组
@@ -190,6 +213,17 @@ export default {
         });
         //去重
         this.statusData = [...new Set(statusArr)];
+        var a = [];
+        if(statusArr){
+          for(var i=0;i<statusArr.length;i++){
+            if(statusArr[i]=='使用中'){
+              a[i]='冻结';
+            }else{
+              a[i]='恢复';
+            }
+          }
+        }
+        this.buttonData=[...a];
       } catch (error) {
         config.errorMsg(this, "查找错误");
       }
