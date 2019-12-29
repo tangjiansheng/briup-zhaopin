@@ -3,7 +3,7 @@
  * 客服列表页面
  * @Date: 2019-12-23 17:11:53 
  * @Last Modified by: liuyr
- * @Last Modified time: 2019-12-29 20:01:39
+ * @Last Modified time: 2019-12-29 20:08:54
  */
 <template>
 
@@ -16,7 +16,7 @@
 
     <!-- 下拉框和输入框 -->
      <div class="selectDiv">
-       <div class="select1"
+       <div class="select1">
        <!-- 下拉框1 -->
        <el-select  @change="statusChange" v-model="status" clearable placeholder="在线">
         <el-option v-for="item in statusData" :key="item" :label="item" :value="item"></el-option>
@@ -41,7 +41,7 @@
       </div>
           
      </div>
-     
+   </div>  
      <!-- 表格内容 -->
      <div class="tableDiv">
        <el-table ref="multipleTable" :data="CustomerServiceData" tooltip-effect="dark" style="width: 100%" >
@@ -145,9 +145,10 @@
                
        </el-dialog>
       
+      </div>
+
     </div>
 
-</div>
 </template>
 
 <script>
@@ -425,7 +426,7 @@ toDelete(id) {
 
 }
 .inputDiv{
-  width: 300px;
+  width: 280px;
   float:right;
 }
 .tableDiv{
