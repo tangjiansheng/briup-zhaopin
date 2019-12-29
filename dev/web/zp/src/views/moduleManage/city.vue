@@ -3,14 +3,15 @@
  * 城市管理页面
  * @Date: 2019-12-23 17:11:53 
  * @Last Modified by: liuyr
- * @Last Modified time: 2019-12-29 10:04:26
+ * @Last Modified time: 2019-12-29 14:23:08
  */
 <template>
   <div id="moduleCity">
     <div class="header">
-      <div class="buttonDiv">
-          <el-button  @click="saveprovince" size="mini" type="primary" prain>增加省份</el-button>
-           <el-button @click="savegetcity" size="mini" type="primary" prain>增加城市</el-button>
+          <div class="buttonDiv">
+          <el-button  @click="getprovible" class="butt" size="mini" type="primary">
+            增加省份</el-button>
+           <el-button @click="getcivible" size="mini" type="primary">增加城市</el-button>
       </div>
     </div>
     <div class="tableDiv">
@@ -22,7 +23,12 @@
       prop="city" >
       <template slot-scope="scope">
        <el-table :data="scope.row.city">
-          <el-table-column prop="name"  label="城市" align ="left">
+          <el-table-column prop="id"  label="城市Id" align ="center">
+            <template slot-scope="scope">
+            <span>{{ scope.row.id}}</span>
+            </template>
+          </el-table-column>
+            <el-table-column prop="name"  label="城市名称" align ="center">
             <template slot-scope="scope">
             <span>{{ scope.row.name}}</span>
             </template>
@@ -43,21 +49,82 @@
          <span>{{ scope.row.name}}</span>
       </template>
     </el-table-column>
+        <el-table-column
+      align="right"
+      label="ID" 
+      prop="id">
+      <template slot-scope="scope"> 
+         <span>{{ scope.row.id}}</span>
+      </template>
+    </el-table-column>
   </el-table>
     </div>
+        <!-- 添加城市模态框 -->
+     <el-dialog title="添加城市" :visible.sync="cityVisible" width="15%">
+              <el-form :model="cityform">
+                     <el-row :gutter="20">
+                       <el-col :span="12">
+                          <el-form-item label="城市名称" :label-width="formLabelWidth">
+                    <el-input v-model="cityform.name" auto-complete="off">
+                   </el-input>   
+                    </el-form-item>                                           
+                       </el-col>
+                         <el-col :span="12">
+                   <el-form-item label="省份Id" :label-width="formLabelWidth">
+                    <el-input v-model="cityform.provinceId" auto-complete="off">
+                   </el-input>   
+                    </el-form-item>                                           
+                       </el-col>
+                     </el-row>
+              </el-form>
+          <div slot="footer" class="dialog-footer" >
+             <el-button size="mini" @click="cityVisible = false">取消</el-button>
+             <el-button size="mini" @click="savecity">确认</el-button>
+          </div>
+            </el-dialog>
+    <!-- 添加省份模态框 -->
+     <el-dialog title="添加省份" :visible.sync="proVisible" width="15%">
+              <el-form :model="provinceform">
+                     <el-row :gutter="20">
+                       <el-col :span="12">
+                          <el-form-item label="省份名称" :label-width="formLabelWidth">
+                    <el-input v-model="provinceform.name" auto-complete="off">
+                   </el-input>   
+                    </el-form-item>                                           
+                       </el-col>
+                     </el-row>
+              </el-form>
+          <div slot="footer" class="dialog-footer" >
+             <el-button size="mini" @click="proVisible = false">取消</el-button>
+             <el-button size="mini" @click="saveprovince">确认</el-button>
+          </div>
+            </el-dialog>
   </div>
 </template>
 
 <script>
 import { findAllProvince,saveOrUpdateProvince} from "@/api/province.js";
-import { findAllCity, findCityByProvinceId,deleteCityById } from "@/api/city.js";
+import { findAllCity, findCityByProvinceId,deleteCityById,saveOrUpdateCity } from "@/api/city.js";
 export default {
   data() {
     return { 
+      acriveName:"1",
+      input:"",
+      cityform:{
+        name:"",
+        provinceId:"",
+      },
+      provinceform:{
+        name:'',
+      },
+      //添加省份模块显示与否
+      cityVisible :false,
+      //添加省份模块显示与否
+      proVisible : false,
       //省份
       province: "",
       //城市
-        city: {
+        cityform: {
         name: "",
         provinceId: ""
       },
@@ -70,7 +137,52 @@ export default {
   },
   computed: {},
   methods: { 
-
+    //显示添加城市页面表单。
+    getcivible(){
+      this. cityform= { };
+      this.cityVisible = true;
+    },
+    //显示添加省份页面表单。
+    getprovible(){
+      this. provinceform= { };
+      this.proVisible = true;
+    },
+    //保存省份
+     async saveprovince(){
+     console.log(this.provinceform)
+     let name = this.provinceform
+     try{
+       let res = await saveOrUpdateProvince(name);
+       console.log(res);
+       this.proVisible=false;
+       this.findAllPro()
+       this.$notify({
+         title:"成功",
+         message:"保存成功",
+         type:"success"
+       });
+     }catch(err){
+       console.log(err)
+     }
+     },
+      //保存城市
+     async savecity(){
+     console.log(this.cityform)
+     let name = this.cityform
+     try{
+       let res = await saveOrUpdateCity(name);
+       console.log(res);
+       this.cityVisible=false;
+       this.findAllPro()
+       this.$notify({
+         title:"成功",
+         message:"保存成功",
+         type:"success"
+       });
+     }catch(err){
+       console.log(err)
+     }
+     },
    //删除
     toDelete(id) {
       // alert("删除");
@@ -100,48 +212,9 @@ export default {
           });
         });
     },
-    ////保存省份
-     saveprovince() {
-        this.$prompt('请输入省份名称', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: "warning"
-        }).then(async(value) => {   
-          try{
-             let res = await saveOrUpdateProvince({ name:value });
-            if (res.status === 200) {
-              config.successMsg(this, "保存成功");
-              this.findAllPro();
-            } else {
-              config.errorMsg(this, "保存失败");
-            }
-          } catch (error) {
-            config.errorMsg(this, "保存完成");
-          }
-          })
-        .catch(() => {
-          this.$message({
-            type: 'info',
-            message: '保存完成'
-          });       
-        });
-      },
           //城市输入框
-    savegetcity () {
-        this.$prompt('请输入城市名称', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-        }).then(({ value }) => {
-          this.$message({
-            type: 'success',
-            message: '保存成功 ' + value
-          });
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '取消输入'
-          });       
-        });
+   async  savegetcity () {
+        
       },
       //查找所有城市信息
     async findAllCi() {
