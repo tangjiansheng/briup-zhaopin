@@ -3,49 +3,171 @@
  * 职位管理页面
  * @Date: 2019-12-23 17:11:53 
  * @Last Modified by: liuyr
- * @Last Modified time: 2019-12-28 16:34:39
+ * @Last Modified time: 2019-12-29 10:22:28
  */
 <template>
+
   <div id="modulePosition">
-    <div class="mount">
-       <div class="header">
-     <div class="buttonDiv">
-      <el-button @click="show3 = !show3" size="small" type="danger" icon="el-icon-info">添加省份</el-button>
-    </div>
-    </div>
-    <div class="table_1">
-       <div class="provinceDiv_1">
-          职位
-      </div>
-      <div class="CityDiv_1">
-         工种
+<!-- {{jobsData}} -->
+    <div class="header">
+      <div class="buttonDiv">
+          <el-button  @click="savejobtype" size="mini"  type="primary" align ="left">增加工种</el-button>
+           <el-button @click="savejob" size="mini" type="primary" align ="left">增加职位</el-button>
       </div>
     </div>
-          <!-- <el-collapse-transition>
-        <div v-show="show3"> -->
-       <div class="table_2" >
-       <div class="provinceDiv_2">
-          职位
-      </div>
-      <div class="CityDiv_2">
-         工种
-      </div>
-    </div> 
-    <!-- </div>
-      </el-collapse-transition> -->
+    <div class="tableDiv">
+      <el-table
+    :data="jobsData"
+    style="width: 40%">
+    <el-table-column
+     type="expand"
+      prop="job" >
+      <template slot-scope="scope">
+       <el-table :data="scope.row.job">
+          <el-table-column prop="name"  label="职业" align ="left">
+            <template slot-scope="scope">
+            <span>{{ scope.row.name}}</span>
+            </template>
+          </el-table-column>
+            <el-table-column prop="play"  label="操作" align ="right">
+            <template slot-scope="scope">
+   <el-button @click="toDelete(scope.row.id)" type="danger" size="mini"  icon="el-icon-delete"></el-button>
+            </template>
+          </el-table-column>
+       </el-table>
+     </template>
+    </el-table-column>
+    <el-table-column
+      align="left"
+      label="工种" 
+      prop="staus">
+      <template slot-scope="scope"> 
+         <span>{{ scope.row.name}}</span>
+      </template>
+    </el-table-column>
+  </el-table>
     </div>
   </div>
 </template>
 
 <script>
+import {findAllJobType} from "@/api/job-type.js";
+import {findJobsByStatus,findAllJobs,deleteJobsById} from "@/api/jobs.js";
 export default {
   data() {
-    return {};
+    return {
+      //工种
+      jobtype: "",
+      //职业
+        job:[],
+      //工作数组
+     jobsData: [],
+
+    };
   },
   computed: {},
-  methods: {},
-  created() {},
-  mounted() {}
+  methods: {
+       //删除
+    toDelete(id) {
+      // alert("删除");
+      this.$confirm("是否删除该记录?", "提示", {
+        confirmButtonText: "删除",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(async () => {
+          //访问后台接口
+          try {
+            let res = await deleteJobsById({ id: id });
+            if (res.status === 200) {
+              config.successMsg(this, "删除成功");
+              this.findAlljt();
+            } else {
+              config.errorMsg(this, "删除失败");
+            }
+          } catch (error) {
+            config.errorMsg(this, "删除失败");
+          }
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "删除成功"
+          });
+        });
+    },
+     //保存工种
+     savejobtype() {
+        this.$prompt('请输入工种名称', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: "warning"
+        }).then(async(value) => {   
+          try{
+             let res = await saveOrUpdateProvince({ name:value });
+            if (res.status === 200) {
+              config.successMsg(this, "保存成功");
+              this.findAlljt();
+            } else {
+              config.errorMsg(this, "保存失败");
+            }
+          } catch (error) {
+            config.errorMsg(this, "保存完成");
+          }
+          })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: '保存完成'
+          });       
+        });
+      },
+          //保存职业
+    savejob() {
+        this.$prompt('请输入职业名称', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+        }).then(({ value }) => {
+          this.$message({
+            type: 'success',
+            message: '保存成功 ' + value
+          });
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '取消输入'
+          });       
+        });
+      },
+  //查找所有工种信息
+ async findAlljt(page) {
+      try {
+        let res = await findAllJobType();
+        let temp = [...res.data];
+        temp.forEach(async(item)=>{
+          let staus = item.name;
+          let resp = await findJobsByStatus({staus:staus})
+          console.log(resp);
+          item.job = resp.data; 
+        })
+        setTimeout(()=>{
+          this.jobsData = temp; 
+        },500)
+      } catch (err) {
+        this.$notify.error({
+          title:"错误",
+          message:"查找失败"
+        });
+      }
+ },
+
+  },
+  created() {
+     this.findAlljt()
+  },
+  mounted() {
+    
+  }
 };
 </script>
 <style lang="scss" scoped>
@@ -55,55 +177,5 @@ export default {
 }
 .header{
   overflow: hidden;
-
-.buttonDiv{
-  float: right;
-  margin-right: 20%;
-  margin-top: 10px;
-}
-}
-.table_1{
-margin-top: 20px;
-width:80%;
-height:80px;
-border:1px solid #000
-to
-}
-.provinceDiv_1{
-  font-size: 12px;
-  color: white;
-  background-color: #000;
-  width:100%;
-  height:35%;
-  border:1px solid #000
-}
-.CityDiv_1{
-  font-size: 12px;
-  color: black;
-  width:100%;
-  height:65%;
-  border:1px solid #000
-}
-.table_2{
-margin-top: 20px;
-width:80%;
-height:80px;
-border:1px solid #000
-to
-}
-.provinceDiv_2{
-  font-size: 12px;
-  color: white;
-  background-color: #000;
-  width:100%;
-  height:35%;
-  border:1px solid #000
-}
-.CityDiv_2{
-  font-size: 12px;
-  color: black;
-  width:100%;
-  height:65%;
-  border:1px solid #000
 }
 </style>
