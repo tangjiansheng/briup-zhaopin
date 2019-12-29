@@ -3,13 +3,13 @@
  * 招聘中页面
  * @Date: 2019-12-23 17:03:30 
  * @Last Modified by: tangjs
- * @Last Modified time: 2019-12-28 16:56:50
+ * @Last Modified time: 2019-12-28 20:29:48
  */
 <template>
   <div id="recruitDoing">
     <div class="icon">
       <el-button type="primary" icon="el-icon-edit" class="put" @click="toAdd()" :visible.sync="addVisible" width="60%" :before-close="beforeClose">发布职位</el-button>
-      <el-button type="primary" icon="el-icon-edit" class="import">导入职位</el-button>
+      <el-button type="primary" icon="el-icon-edit" class="import" @click="toAdd()">导入职位</el-button>
     </div>
     <div class="searchDiv">
       <el-select @change="jobChange" v-model="jobtype" clearable placeholder="职位类型">
@@ -226,8 +226,105 @@
         <el-button size="mini" type="primary" @click="tosave('ruleForm')">确 定</el-button>
       </div>
     </el-dialog>
-     <!-- 导入模态框 -->
-    <el-dialog title="导入招聘" :visible.sync="addVisible" width="60%" :before-close="beforeClose">
+     <!-- 发布模态框 -->
+    <el-dialog title="发布职位" :visible.sync="addVisible" width="60%" :before-close="beforeClose">
+      <el-form :model="currentEm" :rules="rules" ref="ruleForm">
+        <el-form-item prop="title" label="兼职名称" :label-width="formLabelWidth">
+          <el-input v-model="currentEm.title"></el-input>
+        </el-form-item>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item prop="job" clearable required label="选择工种" :label-width="formLabelWidth">
+              <el-select 
+                clearable 
+                v-model="currentEm.job" 
+                placeholder="请选择工种信息">
+                <el-option
+                  v-for="item in jobtypeData"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.name">
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item prop="num" label="招聘人数" :label-width="formLabelWidth">
+              <el-input v-model="currentEm.num"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item prop="businessId" clearable required label="招聘公司" :label-width="formLabelWidth">
+              <el-select 
+                clearable 
+                v-model="currentEm.businessId" 
+                placeholder="请选择工种信息">
+                <el-option
+                  v-for="item in businessData"
+                  :key="item"
+                  :label="item"
+                  :value="item">
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item prop="salary" label="薪资水平" :label-width="formLabelWidth">
+              <el-input v-model="currentEm.salary"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-form-item prop="welfare" label="职位标签" :label-width="formLabelWidth">
+          <el-input v-model="currentEm.welfare"></el-input>
+        </el-form-item>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item prop="contactPhone" label="联系方式" :label-width="formLabelWidth">
+              <el-input v-model="currentEm.contactPhone"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item prop="contactName" label="联系人姓名" :label-width="formLabelWidth">
+              <el-input v-model="currentEm.contactName"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item clearable required label="招聘时长" :label-width="formLabelWidth">
+              <div class="block">
+                <el-date-picker
+                  v-model="value2"
+                  type="daterange"
+                  align="right"
+                  unlink-panels
+                  range-separator="-"
+                  start-placeholder="开始日期"
+                  end-placeholder="结束日期"
+                  :picker-options="pickerOptions">
+                </el-date-picker>
+              </div>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item prop="workingHours" label="工作时间" :label-width="formLabelWidth">
+              <el-input v-model="currentEm.workingHours"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-form-item prop="description" label="职位描述" :label-width="formLabelWidth">
+          <el-input type="textarea" :rows="4" v-model="currentEm.description"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button size="mini" @click="toCancel('ruleForm')">取 消</el-button>
+        <el-button size="mini" type="primary" @click="tosave('ruleForm')">确 定</el-button>
+      </div>
+    </el-dialog>
+    <!-- 导入模态框 -->
+    <el-dialog title="导入职位" :visible.sync="addVisible" width="60%" :before-close="beforeClose">
       <el-form :model="currentEm" :rules="rules" ref="ruleForm">
         <el-form-item prop="title" label="兼职名称" :label-width="formLabelWidth">
           <el-input v-model="currentEm.title"></el-input>
