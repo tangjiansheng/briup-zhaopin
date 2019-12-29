@@ -309,6 +309,8 @@ export default {
     },
     //通过电话标题发生改变
     async searchForJobhunter(searchKeyword){
+      this.gender = '';
+      this.education = '';
       if(this.searchType === "2"){
         if(searchKeyword){
           
@@ -462,14 +464,17 @@ export default {
               this.$refs[formName].resetFields();
             } else {
               config.errorMsg(this, "修改失败");
+              this.$refs[formName].resetFields();
             }
           } catch (error) {
             console.log(error);
             config.errorMsg(this, "修改失败");
+            this.$refs[formName].resetFields();
           }
           } else {
           console.log("error submit!!");
           return false;
+          this.$refs[formName].resetFields();
         }
       });
       this.editVisible = false;
