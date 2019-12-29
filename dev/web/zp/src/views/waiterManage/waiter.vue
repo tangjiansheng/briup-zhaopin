@@ -2,32 +2,26 @@
  * @Author: liuyr 
  * 客服列表页面
  * @Date: 2019-12-23 17:11:53 
- * @Last Modified by: liuyr
- * @Last Modified time: 2019-12-29 20:01:39
+ * @Last Modified by: RealsenWang
+ * @Last Modified time: 2019-12-29 20:20:37
  */
 <template>
 
   <div class="wrap">
-     <!-- 按钮 -->
-     <div class="buttonDiv" align="right">
-        <el-button @click="toNew()" type="warning" size="medium" style="background:rgb(245, 157, 50)">添加客服</el-button>
-        <el-button @click="toinput" type="primary" size="medium">导入客服</el-button>
-     </div>
-
     <!-- 下拉框和输入框 -->
      <div class="selectDiv">
-       <div class="select1"
-       <!-- 下拉框1 -->
-       <el-select  @change="statusChange" v-model="status" clearable placeholder="在线">
+       <div class="select1">
+         <!-- 下拉框1 -->
+       <el-select @change="statusChange" v-model="status" clearable placeholder="在线">
         <el-option v-for="item in statusData" :key="item" :label="item" :value="item"></el-option>
        </el-select>
        <!-- 下拉框2 -->
-       <el-select   @change="genderChange" v-model="gender"  clearable placeholder="性别">
+       <el-select @change="genderChange" v-model="gender"  clearable placeholder="性别">
         <el-option v-for="item in genderData" :key="item" :label="item" :value="item"></el-option>
        </el-select>
        <!-- 输入框 -->
       <div class="inputDiv">
-        <el-input   clearable  placeholder="请输入关键字" @change="inputChange" v-model="inputWord" class="input-with-select">
+        <el-input clearable  placeholder="请输入关键字" @change="inputChange" v-model="inputWord" class="input-with-select">
          <el-select clearable v-model="input2" slot="prepend" placeholder="关键字" class="choose">
         <el-option
                 v-for="item in options"
@@ -39,10 +33,14 @@
          <el-button slot="append" icon="el-icon-search" @click="KeyWordhanshu"></el-button>
         </el-input>
       </div>
-          
+       </div>
+  </div>
+  <!-- 按钮 -->
+     <div class="buttonDiv">
+        <el-button @click="toNew()" type="warning" size="medium" style="background:rgb(245, 157, 50)">添加客服</el-button>
+        <el-button @click="toinput" type="primary" size="medium">导入客服</el-button>
      </div>
-     
-     <!-- 表格内容 -->
+  <!-- 表格内容 -->
      <div class="tableDiv">
        <el-table ref="multipleTable" :data="CustomerServiceData" tooltip-effect="dark" style="width: 100%" >
           <el-table-column type="selection" width="55"></el-table-column>
@@ -83,7 +81,7 @@
                 <el-table-column prop="jobhunter.realname" label="求职人" ></el-table-column>
                 <el-table-column prop="jobhunter.telephone" label="联系方式" ></el-table-column>
                 <el-table-column prop="employment.job" label="求职岗位" ></el-table-column>
-                <el-table-column prop="status" label="经手人" >
+                <el-table-column prop="jobhunter.realname" label="经手人" >
                       
                 </el-table-column>
                 <el-table-column prop="askTime" label="申请时间" ></el-table-column>
@@ -104,7 +102,7 @@
     
     <!-- 模态框1 -->
     <div>
-     <el-dialog title="添加客服" :visible.sync=" Visible1" :before-close="beforeClose" width="40%" >
+     <el-dialog title="添加客服" :visible.sync=" Visible1" :before-close="beforeClose" >
          <el-form :model="CustomerService" ref= "ruleForm">
             <el-form-item prop="username" label="用户名" :label-width="formLabelWidth">
             <el-input v-model="CustomerService.username" autocomplete="off"></el-input>
@@ -125,28 +123,25 @@
              </template>
           </el-form-item>
          </el-form>
-        <el-button @click="toAdd('ruleForm')" type="primary" style="margin-left: 250px" >添加</el-button>
+        <el-button @click="toAdd('ruleForm')" type="primary" >添加</el-button>
      </el-dialog>
     </div>
 
      <!-- 模态框2 -->
     <div>
        <el-dialog title="导入说明" :visible.sync="Visible2" width="30%" >
-               <span>使用导入功能时，请按照模板表格规定的字段去填写对应信息，
-               <br> 您可以点击按钮下载模板表格，<br>
+               <span>使用导入功能时，请按照模板表格规定的字段
+               去填写对应信息，您可以点击按钮下载模板表格，
                填写完后在下提交:</span>
-               <el-button size="mini" type="info" class="down" style="margin-bottom:5px">下载模板</el-button>
-               
-               <el-upload style="margin-left:30px;"  class="upload-demo" drag action="https://jsonplaceholder.typicode.com/posts/" multiple>
-               <i class="el-icon-upload" ></i>
-               <div class="el-upload__text" >将文件拖到此处，或<em>点击上传</em></div>
+               <el-button size="mini" type="info" class="down">下载模板</el-button>
+               <el-upload class="upload-demo" drag action="https://jsonplaceholder.typicode.com/posts/" multiple>
+               <i class="el-icon-upload"></i>
+               <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+               <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过500kb</div>
                </el-upload>
-               <el-button type="success" style="margin-left:155px" >开始导入</el-button>
-               
        </el-dialog>
       
     </div>
-
 </div>
 </template>
 
@@ -415,18 +410,19 @@ toDelete(id) {
 <style lang="scss" scoped>
 .buttonDiv{
   float: right;
-  margin-top: -6px;
 }
-
 .selectDiv{
- margin-top: -30px;
- width: 53%;
- display:inline-block;
-
-}
-.inputDiv{
-  width: 300px;
-  float:right;
+  float: left;
+  display: inline-block;
+  margin-bottom: 10px;
+  .select1{
+    width: 100%;
+    .inputDiv{
+      margin-left: 10px;
+      float: right;
+      width: 350px;
+    }
+  }
 }
 .tableDiv{
   margin-top: 10px;
@@ -441,20 +437,15 @@ toDelete(id) {
 .btnDiv{
   margin-top: 20px;
 }
-
 .dialogDiv1{
+  
   .fenpei{
-    margin-top: -20px;
+    margin-top: -26px;
     float: right;
-    margin-bottom: 10px;
-  }
-  .table{
-     margin-bottom: 10px;
   }
   .pageDiv{
     float: right;
-    margin-top: -8px;
+    
   }
-  
 }
  </style>

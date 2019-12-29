@@ -2,7 +2,7 @@
  * @Author: RealsenWang 
  * @Date: 2019-12-27 20:24:26 
  * @Last Modified by: RealsenWang
- * @Last Modified time: 2019-12-29 10:23:28
+ * @Last Modified time: 2019-12-29 19:51:34
  */
 
 <template>
@@ -35,7 +35,7 @@
         </el-select>
         <div class="input-with-select">
           <el-input clearable @change="inputChange" placeholder="请输入内容" v-model="searchKeyword">
-            <el-select style="width:100px" v-model="searchType" slot="prepend" placeholder="请选择">
+            <el-select clearable style="width:100px" v-model="searchType" slot="prepend" placeholder="请选择">
               <el-option label="用户名" value="1"></el-option>
               <el-option label="电话" value="2"></el-option>
             </el-select>
@@ -134,8 +134,8 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item prop="gender" label="性别:" :label-width="formLabelWidth">
-              <el-input v-model="currentJob.gender"></el-input>
+            <el-form-item prop="workTime" label="工作时间:" :label-width="formLabelWidth">
+              <el-input v-model="currentJob.workTime"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
@@ -146,8 +146,8 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item prop="education" label="最高学历:" :label-width="formLabelWidth">
-              <el-input v-model="currentJob.education"></el-input>
+            <el-form-item prop="resume" label="简历:" :label-width="formLabelWidth">
+              <el-input v-model="currentJob.resume"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
@@ -165,14 +165,28 @@
         </el-row>
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-form-item prop="resume" label="简历:" :label-width="formLabelWidth">
-              <el-input v-model="currentJob.resume"></el-input>
-            </el-form-item>
+            <el-form-item required label="最高学历:" :label-width="formLabelWidth">
+            <el-select required style="width:340px;" prop="education" v-model="currentJob.education" clearable placeholder="最高学历">
+          <el-option
+            v-for="item in educationData"
+            :key="item"
+            :label="item"
+            :value="item">
+          </el-option>
+        </el-select>
+        </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item prop="workTime" label="工作时间:" :label-width="formLabelWidth">
-              <el-input v-model="currentJob.workTime"></el-input>
-            </el-form-item>
+            <el-form-item required label="性别:" :label-width="formLabelWidth">
+            <el-select required style="width:340px;" prop="gender" v-model="currentJob.gender" clearable placeholder="性别">
+          <el-option
+            v-for="item in genderData"
+            :key="item"
+            :label="item"
+            :value="item">
+          </el-option>
+        </el-select>
+        </el-form-item>
           </el-col>
         </el-row>
       </el-form>
@@ -244,6 +258,7 @@ import config from "@/utils/config.js";
 export default {
   data() {
     return {
+      formLabelWidth: "90px",
       searchTypeValue:'',
       searchKeyword:'',
       searchType:'',
@@ -271,13 +286,13 @@ export default {
         ],
         telephone: [{ required: true, message: "请输入电话号码", trigger: "blur" }],
         gender: [
-          { required: true, message: "请输入性别", trigger: "blur" }
+          { required: true, message: "请选择性别", trigger: "change" }
         ],
         birth: [
           { required: true, message: "请输入出生年月", trigger: "blur" }
         ],
         education: [
-          { required: true, message: "请输入最高学历", trigger: "blur" }
+          { required: true, message: "请选择最高学历", trigger: "change" }
         ],
         currentStatus: [
           { required: true, message: "请输入求职状态", trigger: "blur" }
@@ -416,7 +431,6 @@ export default {
     //新增
     toAdd(){
       this.currentJob = {};
-      // this.$refs["ruleForm"].resetFields();
       this.addVisible = true;
     },
     //删除
@@ -459,9 +473,10 @@ export default {
             let res = await saveOrUpdateJobhunter(this.currentJob);
             if (res.status === 200) {
               this.findAllJob();
-              this.addsVisible = false;
               config.successMsg(this, "修改成功");
               this.$refs[formName].resetFields();
+              this.editVisible = false;
+              this.addVisible = false;
             } else {
               config.errorMsg(this, "修改失败");
               this.$refs[formName].resetFields();
@@ -477,8 +492,6 @@ export default {
           this.$refs[formName].resetFields();
         }
       });
-      this.editVisible = false;
-      this.addVisible = false;
     },
     //批量删除
     toBatchDelete() {
@@ -506,6 +519,7 @@ export default {
                 });
                 if (resu) {
                   config.successMsg(this, "批量删除成功");
+                  this.findAllJob();
                 } else {
                   config.errorMsg(this, "批量删除失败");
                 }
