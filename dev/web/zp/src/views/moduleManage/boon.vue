@@ -3,7 +3,7 @@
  * 福利管理页面
  * @Date: 2019-12-23 17:11:53 
  * @Last Modified by: liuyr
- * @Last Modified time: 2019-12-29 21:13:13
+ * @Last Modified time: 2019-12-29 23:10:44
  */
 <template>
   <div id="moduleBoon">
@@ -58,7 +58,7 @@
   </div>
 </template>
 <script>
-import { findAllWelfare,deleteWelfareById,findWelfareById } from "@/api/boon.js";
+import { findAllWelfare,deleteWelfareById,findWelfareById,saveOrUpdateWelfare } from "@/api/boon.js";
 import config from "@/utils/config.js";
 import qs from "qs";
 export default {
@@ -173,11 +173,12 @@ changestatus(val) {
        var new_status = val.status;
        if(val.status="使用中"){
            new_status= "冻结中";
-       } else{
+       }else{
            new_status= "使用中";
        }
        try{
          let res = saveOrUpdateWelfare({id: val.id, status:new_status, name: val.name});
+         this.welfareData = res.data;
          this.findAllWel();
        }catch(err){
          this.$notify.error({

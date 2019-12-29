@@ -195,8 +195,53 @@
         <el-button size="mini" type="primary" @click="toSave('ruleForm')">确 定</el-button>
       </div>
     </el-dialog>
-  <!-- 修改模态框 -->
-    <el-dialog title="导入用户信息" :visible.sync="editVisible" width="26%" :before-close="beforeClose">
+     <!-- 修改模态框 -->
+    <el-dialog title="修改用户信息" :visible.sync="editVisible" width="60%" :before-close="beforeClose">
+      <el-form :model="currentJob" :rules="rules" ref="ruleForm">
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item prop="username" label="用户名" :label-width="formLabelWidth">
+              <el-input v-model="currentJob.username"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item prop="realname" label="姓名" :label-width="formLabelWidth">
+              <el-input v-model="currentJob.realname"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item prop="telephone" label="手机号" :label-width="formLabelWidth">
+              <el-input v-model="currentJob.telephone"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item prop="gender" label="性别" :label-width="formLabelWidth">
+              <el-input v-model="currentJob.gender"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item prop="birth" label="出生年月" :label-width="formLabelWidth">
+              <el-input v-model="currentJob.birth"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item prop="education" label="最高学历" :label-width="formLabelWidth">
+              <el-input v-model="currentJob.education"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button size="mini" @click="toCancel('ruleForm')">取 消</el-button>
+        <el-button size="mini" type="primary" @click="toSave('ruleForm')">确 定</el-button>
+      </div>
+    </el-dialog>
+  <!-- 导入模态框 -->
+    <el-dialog title="导入用户信息" :visible.sync="importVisible" width="26%" :before-close="beforeClose">
       <el-upload
         class="upload-demo"
         drag
@@ -207,8 +252,8 @@
         <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过500kb</div>
       </el-upload>
       <div slot="footer" class="dialog-footer">
-        <el-button size="mini" @click="toCancelEdit('ruleForm')">取 消</el-button>
-        <el-button size="mini" type="primary" @click="toSaveEdit('ruleForm')">确 定</el-button>
+        <el-button size="mini" @click="toCancelImport('ruleForm')">取 消</el-button>
+        <el-button size="mini" type="primary" @click="toSaveImport('ruleForm')">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -250,6 +295,7 @@ export default {
       genderData:[],
       addVisible:false,
       editVisible:false,
+      importVisible:false,
       rules: {
         username: [{ required: true, message: "请输入用户名", trigger: "blur" }],
         realname: [
@@ -334,6 +380,7 @@ export default {
       this.$refs["ruleForm"].resetFields();
       this.addVisible = false;
       this.editVisible = false;
+      this.importVisible = false;
     },
     //关闭模态框
     toCancel(formName) {
@@ -341,13 +388,14 @@ export default {
       this.$refs[formName].resetFields();
       this.addVisible = false;
       this.editVisible = false;
+      this.importVisible = false;
       this.currentJob = {};
     },
-    toCancelEdit(){
-      this.editVisible = false;
+    toCancelImport(){
+      this.importVisible = false;
     },
-    toSaveEdit(){
-      this.editVisible = false;
+    toSaveImport(){
+      this.importVisible = false;
     },
     // 页数发生改变
     pageChange(page) {
@@ -411,7 +459,7 @@ export default {
       this.addVisible = true;
     },
     toImport(){
-      this.editVisible = true;
+      this.importVisible = true;
     },
     //删除
     toDelete(id) {
@@ -472,6 +520,7 @@ export default {
           this.$refs[formName].resetFields();
         }
       });
+      this.importVisible = false;
     },
     //批量删除
     toBatchDelete() {

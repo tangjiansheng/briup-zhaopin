@@ -2,7 +2,7 @@
  * @Author: mikey.zhaopeng 
  * @Date: 2019-12-27 09:22:13 
  * @Last Modified by: mikey.zhaopeng
- * @Last Modified time: 2019-12-28 08:57:17
+ * @Last Modified time: 2019-12-29 09:51:37
  */
 import axios from '@/utils/axios'
 /**
@@ -14,7 +14,7 @@ export  function findAllCustomerService() {
 }
 
 /**  
- * 通过学历查找客服
+ * 通过状态查找客服
 */
 export  function findCustomerServiceByEducation(param) {
     return axios.get('/CustomerService/findByEducation',{params:param});
@@ -42,5 +42,9 @@ export  function findCustomerServiceByUsername(param) {
 export  function deleteCustomerServiceById(param) {
     return axios.post('/CustomerService/deleteById',param);
 }
-    
-   
+/**  
+ * /CustomerService/saveOrUpdate
+ */
+export  function saveOrUpdateCustomerService(param) {
+    return axios.post('/CustomerService/saveOrUpdate',param);
+}
