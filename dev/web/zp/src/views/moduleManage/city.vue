@@ -3,7 +3,7 @@
  * 城市管理页面
  * @Date: 2019-12-23 17:11:53 
  * @Last Modified by: liuyr
- * @Last Modified time: 2019-12-29 15:47:57
+ * @Last Modified time: 2019-12-29 17:43:53
  */
 <template>
   <div id="moduleCity">
@@ -63,13 +63,13 @@
      <el-dialog title="添加城市" :visible.sync="cityVisible" width="15%">
               <el-form :model="cityform">
                      <el-row :gutter="20">
-                       <el-col :span="12">
-                          <el-form-item label="城市名称" :label-width="formLabelWidth">
+                       <el-col>
+                    <el-form-item label="城市名称" :label-width="formLabelWidth">
                     <el-input v-model="cityform.name" auto-complete="off">
                    </el-input>   
                     </el-form-item>                                           
                        </el-col>
-                         <el-col :span="12">
+                         <el-col>
                    <el-form-item label="省份Id" :label-width="formLabelWidth">
                     <el-input v-model="cityform.provinceId" auto-complete="off">
                    </el-input>   
@@ -86,7 +86,7 @@
      <el-dialog title="添加省份" :visible.sync="proVisible" width="15%">
               <el-form :model="provinceform">
                      <el-row :gutter="20">
-                       <el-col :span="12">
+                       <el-col>
                           <el-form-item label="省份名称" :label-width="formLabelWidth">
                     <el-input v-model="provinceform.name" auto-complete="off">
                    </el-input>   

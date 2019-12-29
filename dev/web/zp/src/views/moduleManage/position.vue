@@ -3,12 +3,12 @@
  * 职位管理页面
  * @Date: 2019-12-23 17:11:53 
  * @Last Modified by: liuyr
- * @Last Modified time: 2019-12-29 16:46:06
+ * @Last Modified time: 2019-12-29 18:26:49
  */
 <template>
 
   <div id="modulePosition">
-{{jobsData}}
+<!-- {{jobsData}} -->
     <div class="header">
       <div class="buttonDiv">
           <el-button  @click="getjobtype" size="mini"  type="primary" align ="left">增加工种</el-button>
@@ -48,10 +48,11 @@
   </el-table>
     </div>
 <!-- 添加工种模态框 -->
-     <el-dialog title="添加工种" :visible.sync="jobtVisible" width="15%">
+<div class="dialog">
+       <el-dialog title="添加工种" :visible.sync="jobtVisible" width="15%">
               <el-form :model="jobtpeform">
                      <el-row :gutter="20">
-                       <el-col :span="12">
+                       <el-col>
                           <el-form-item label="工种名称" :label-width="formLabelWidth">
                     <el-input v-model="jobtpeform.name" auto-complete="off">
                    </el-input>   
@@ -64,12 +65,36 @@
              <el-button size="mini" @click="jobtpesave">确认</el-button>
           </div>
             </el-dialog>
+</div>
+    <!-- 添加职业模态框 -->
+     <el-dialog title="添加职业" :visible.sync="jobVisible" width="15%">
+              <el-form :model="jobform">
+                     <el-row :gutter="20">
+                       <el-col>
+                    <el-form-item label="职业名称" :label-width="formLabelWidth">
+                    <el-input v-model="jobform.name" auto-complete="off">
+                   </el-input>   
+                  </el-form-item> 
+                    <el-col>  
+                    <el-form-item label="工种名称" :label-width="formLabelWidth">
+                    <el-input v-model="jobform.status" auto-complete="off">
+                   </el-input>   
+                   </el-form-item>  
+                       </el-col>                                                         
+                       </el-col>
+                     </el-row>
+              </el-form>
+          <div slot="footer" class="dialog-footer" >
+             <el-button size="mini" @click="jobVisible = false">取消</el-button>
+             <el-button size="mini" @click="savejob">确认</el-button>
+          </div>
+            </el-dialog>
   </div>
 </template>
 
 <script>
 import {findAllJobType,saveOrUpdateJobType} from "@/api/job-type.js";
-import {findJobsByStatus,findAllJobs,deleteJobsById} from "@/api/jobs.js";
+import {findJobsByStatus,findAllJobs,deleteJobsById,saveOrUpdateJobs} from "@/api/jobs.js";
 export default {
   data() {
     return {
@@ -84,11 +109,21 @@ export default {
       jobtpeform:{
         name:'',
       },
+      jobform:{
+        name:'',
+        status:'',
+      },
       jobtVisible:false,
+      jobVisible:false,
     };
   },
   computed: {},
   methods: {
+    //显示添加职业表单
+    getjob(){
+      this. jobform= { };
+      this. jobVisible = true;
+    },
     //显示添加工种表单
     getjobtype(){
       this. javatpeform= { };
@@ -105,7 +140,7 @@ export default {
         .then(async () => {
           //访问后台接口
           try {
-            let res = await deleteJobsById({ id: id });
+            let res = await deleteJobsById({ id:id });
             if (res.status === 200) {
               config.successMsg(this, "删除成功");
               this.findAlljt();
@@ -125,11 +160,10 @@ export default {
     },
      //保存工种
 async jobtpesave(){
-     console.log(this.form)
-     let name = this.form
+     console.log(this.jobtpeform)
+     let name = this.jobtpeform;
      try{
-       let res = await saveOrUpdateJobType();
-       console.log(res);
+       let res = await saveOrUpdateJobType(name);
        this.jobtVisible=false;
        this.findAlljt()
        this.$notify({
@@ -141,22 +175,22 @@ async jobtpesave(){
        console.log(err)
      }
      },
-          //保存职业
-  savejob() {
-        this.$prompt('请输入职业名称', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-        }).then(({ value }) => {
-          this.$message({
-            type: 'success',
-            message: '保存成功 ' + value
-          });
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '取消输入'
-          });       
-        });
+  //保存职业
+ async  savejob() {
+     console.log(this.jobform)
+     let name = this.jobform;
+     try{
+       let res = await saveOrUpdateJobs(name);
+       this.jobVisible=false;
+       this.findAlljt()
+       this.$notify({
+         title:"成功",
+         message:"保存成功",
+         type:"success"
+       });
+     }catch(err){
+       console.log(err)
+     }
       },
   //查找所有工种信息
  async findAlljt(page) {
@@ -192,6 +226,10 @@ async jobtpesave(){
 <style lang="scss" scoped>
 .tableDiv {
   margin-top: 10px;
+}
+.dialog{
+  width: 30px;
+  height: 40px;
 }
 .mount{
   margin-top:10px ;
