@@ -3,12 +3,12 @@
  * 职位管理页面
  * @Date: 2019-12-23 17:11:53 
  * @Last Modified by: liuyr
- * @Last Modified time: 2019-12-29 14:45:14
+ * @Last Modified time: 2019-12-29 16:46:06
  */
 <template>
 
   <div id="modulePosition">
-<!-- {{jobsData}} -->
+{{jobsData}}
     <div class="header">
       <div class="buttonDiv">
           <el-button  @click="getjobtype" size="mini"  type="primary" align ="left">增加工种</el-button>
@@ -73,13 +73,15 @@ import {findJobsByStatus,findAllJobs,deleteJobsById} from "@/api/jobs.js";
 export default {
   data() {
     return {
+      acriveName:"1",
+      input:"",
       //工种
       jobtype: "",
       //职业
       job:[],
       //工作数组
       jobsData: [],
-        jobtpeform:{
+      jobtpeform:{
         name:'',
       },
       jobtVisible:false,
@@ -122,11 +124,11 @@ export default {
         });
     },
      //保存工种
-     async jobtpesave(){
+async jobtpesave(){
      console.log(this.form)
      let name = this.form
      try{
-       let res = await saveOrUpdateJobType(name);
+       let res = await saveOrUpdateJobType();
        console.log(res);
        this.jobtVisible=false;
        this.findAlljt()
@@ -140,7 +142,7 @@ export default {
      }
      },
           //保存职业
-    savejob() {
+  savejob() {
         this.$prompt('请输入职业名称', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
@@ -162,8 +164,8 @@ export default {
         let res = await findAllJobType();
         let temp = [...res.data];
         temp.forEach(async(item)=>{
-          let staus = item.name;
-          let resp = await findJobsByStatus({staus:staus})
+          let name = item.name;
+          let resp = await findJobsByStatus({staus:name})
           console.log(resp);
           item.job = resp.data; 
         })
@@ -188,6 +190,9 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+.tableDiv {
+  margin-top: 10px;
+}
 .mount{
   margin-top:10px ;
   width: 100%,
@@ -195,4 +200,5 @@ export default {
 .header{
   overflow: hidden;
 }
+
 </style>

@@ -3,7 +3,7 @@
  * 城市管理页面
  * @Date: 2019-12-23 17:11:53 
  * @Last Modified by: liuyr
- * @Last Modified time: 2019-12-29 14:23:08
+ * @Last Modified time: 2019-12-29 15:47:57
  */
 <template>
   <div id="moduleCity">
@@ -196,8 +196,11 @@ export default {
           try {
             let res = await deleteCityById({ id: id });
             if (res.status === 200) {
-              config.successMsg(this, "删除成功");
-              this.findAllPro();
+             this.$message({
+             type:'success',
+             message:'删除成功',
+             });
+             this.findAllPro();
             } else {
               config.errorMsg(this, "删除失败");
             }
